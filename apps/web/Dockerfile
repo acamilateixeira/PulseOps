@@ -1,6 +1,6 @@
 # Front-end estático servido pelo nginx, com /api encaminhado para a API.
 # Build a partir da raiz do monorepo: docker build -f apps/web/Dockerfile -t pulseops-web .
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
