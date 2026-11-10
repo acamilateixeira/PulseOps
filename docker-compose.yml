@@ -1,0 +1,46 @@
+# Rodar o PulseOps na sua máquina.
+#
+#   docker compose up --build        → app completo em http://localhost:8080
+#   docker compose up -d db          → só o PostgreSQL, para desenvolver com `pnpm dev`
+#
+# Nada aqui é configuração de produção: senhas fixas e portas só em localhost.
+
+name: pulseops
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: pulseops
+      POSTGRES_PASSWORD: pulseops
+      POSTGRES_DB: pulseops
+    ports: ['127.0.0.1:5432:5432']
+    volumes: [pulseops-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pulseops -d pulseops']
+      interval: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgres://pulseops:pulseops@db:5432/pulseops
+      API_PORT: '3000'
+      CORS_ORIGIN: http://localhost:8080,http://localhost:5173
+    command: ['sh', '-c', 'node dist/src/database/migrate-cli.js && node dist/src/main.js']
+    ports: ['127.0.0.1:3000:3000']
+    depends_on:
+      db: { condition: service_healthy }
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports: ['127.0.0.1:8080:8080']
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pulseops-db:
