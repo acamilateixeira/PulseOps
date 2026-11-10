@@ -1,6 +1,6 @@
 # Imagem da API. Build a partir da raiz do monorepo:
 #   docker build -f apps/api/Dockerfile -t pulseops-api .
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
@@ -13,7 +13,7 @@ RUN pnpm --filter @pulseops/contracts build \
  && pnpm --filter @pulseops/api build \
  && pnpm --filter @pulseops/api deploy --prod --legacy /out
 
-FROM node:22-alpine
+FROM node:26-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build --chown=node:node /out ./
