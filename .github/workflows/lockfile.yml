@@ -1,0 +1,34 @@
+name: Atualizar lockfile
+
+# Gera ou atualiza o pnpm-lock.yaml de uma branch e faz commit nela.
+# Usado quando as dependências mudam num ambiente sem acesso ao registro do npm.
+# O commit feito pelo GITHUB_TOKEN não dispara outros workflows; o próximo push dispara o CI.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    if: github.ref != 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Commit do lockfile
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml && git ls-files --error-unmatch pnpm-lock.yaml >/dev/null 2>&1; then
+            echo "lockfile já atualizado"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore: atualiza pnpm-lock.yaml"
+          git push
