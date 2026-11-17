@@ -15,9 +15,9 @@
     "test:integration": "tsc -p tsconfig.json && node --test --test-concurrency=1 \"dist/test/integration/**/*.test.js\""
   },
   "dependencies": {
-    "@nestjs/common": "^12.3.0",
-    "@nestjs/core": "^12.3.0",
-    "@nestjs/platform-express": "^12.3.0",
+    "@nestjs/common": "^12.5.0",
+    "@nestjs/core": "^12.5.0",
+    "@nestjs/platform-express": "^12.5.0",
     "@pulseops/contracts": "workspace:*",
     "drizzle-orm": "^0.45.4",
     "pg": "^8.23.1",
@@ -26,7 +26,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@nestjs/testing": "^12.3.0",
+    "@nestjs/testing": "^12.5.0",
     "@types/node": "^22.19.0",
     "@types/pg": "^8.15.0"
   }
